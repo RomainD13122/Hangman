@@ -6,6 +6,8 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"os/exec"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -88,7 +90,7 @@ func main() {
 				break
 			} else {
 				fmt.Println("Ce n'est pas le bon mot !")
-				vie-- // Perdre une vie si le mot est incorrect
+				vie = vie - 2 // Perdre une vie si le mot est incorrect
 				continue
 			}
 		}
@@ -117,6 +119,7 @@ func main() {
 			break
 		}
 	}
+	clearScreen()
 }
 
 // Fonction pour remplacer les lettres restantes par des underscores
@@ -153,6 +156,19 @@ func contains(indices []int, val int) bool {
 		}
 	}
 	return false
+}
+func clearScreen() {
+	var cmd *exec.Cmd
+	switch runtime.GOOS {
+	case "windows":
+		cmd = exec.Command("cmd", "/c", "cls")
+	case "linux", "darwin": // Linux et MacOS
+		cmd = exec.Command("clear")
+	default:
+		return
+	}
+	cmd.Stdout = os.Stdout
+	cmd.Run()
 }
 
 // Fonction pour vérifier si une rune est dans un mot
