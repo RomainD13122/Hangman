@@ -89,22 +89,26 @@ func main() {
 				fmt.Printf("Félicitations, vous avez deviné le mot : %s\n", motAleatoire)
 				break
 			} else {
-				fmt.Println("Ce n'est pas le bon mot !")
-				vie = vie - 2 // Perdre une vie si le mot est incorrect
+				fmt.Println("Ce n'est pas le bon mot ! Vous perdez deux vies.")
+				vie -= 2 // Perdre deux vies si le mot est incorrect
 				continue
 			}
 		}
 
 		// Si l'utilisateur a entré une seule lettre
-		lettreDevinee := rune(input[0]) // Convertir la lettre en rune
+		if len(input) == 1 {
+			lettreDevinee := rune(input[0]) // Convertir la lettre en rune
 
-		// Mettre à jour l'affichage si la lettre est correcte
-		if containsRune(motAleatoire, lettreDevinee) {
-			affichage = revealLetter(motAleatoire, affichage, lettreDevinee)
-			fmt.Println("Bien joué !")
+			// Mettre à jour l'affichage si la lettre est correcte
+			if containsRune(motAleatoire, lettreDevinee) {
+				affichage = revealAllLetters(motAleatoire, affichage, lettreDevinee)
+				fmt.Println("Bien joué !")
+			} else {
+				fmt.Println("Ce mot ne contient pas cette lettre.")
+				vie-- // Perdre une vie si la lettre n'est pas dans le mot
+			}
 		} else {
-			fmt.Println("Ce mot ne contient pas cette lettre.")
-			vie-- // Perdre une vie si la lettre n'est pas dans le mot
+			fmt.Println("Veuillez entrer une seule lettre ou un mot complet.")
 		}
 
 		// Vérifier si le mot est complètement deviné
@@ -119,6 +123,8 @@ func main() {
 			break
 		}
 	}
+
+	// Effacer l'écran à la fin
 	clearScreen()
 }
 
@@ -157,6 +163,8 @@ func contains(indices []int, val int) bool {
 	}
 	return false
 }
+
+// Fonction pour effacer l'écran selon l'OS
 func clearScreen() {
 	var cmd *exec.Cmd
 	switch runtime.GOOS {
@@ -181,12 +189,12 @@ func containsRune(mot string, lettre rune) bool {
 	return false
 }
 
-// Fonction pour dévoiler une lettre dans l'affichage
-func revealLetter(mot string, affichage string, lettre rune) string {
+// Fonction pour dévoiler toutes les lettres correspondantes dans l'affichage
+func revealAllLetters(mot string, affichage string, lettre rune) string {
 	newAffichage := ""
-	for i, l := range mot {
-		if l == lettre {
-			newAffichage += string(l)
+	for i := 0; i < len(mot); i++ {
+		if rune(mot[i]) == lettre {
+			newAffichage += string(mot[i])
 		} else {
 			newAffichage += string(affichage[i]) // garder le même caractère
 		}
