@@ -124,8 +124,19 @@ func main() {
 		}
 	}
 
-	// Effacer l'écran à la fin
-	clearScreen()
+	// Forcer l'utilisateur à utiliser * pour quitter le programme
+	for {
+		fmt.Println("Entrez * pour quitter : ")
+		var quitInput string
+		fmt.Scan(&quitInput)
+		if quitInput == "*" {
+			break
+		} else {
+			fmt.Println("Entrée invalide. Utilisez * pour quitter.")
+		}
+	}
+
+	clearScreen() // Effacement de l'écran après que l'utilisateur a entré *
 }
 
 // Fonction pour remplacer les lettres restantes par des underscores
