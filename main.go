@@ -6,13 +6,31 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"os/exec"
-	"runtime"
 	"strings"
 	"time"
 )
 
 func main() {
+	for {
+		playGame()
+
+		// Demander à l'utilisateur s'il souhaite rejouer
+		fmt.Print("Voulez-vous rejouer ? (Appuyez sur '+' pour rejouer, * pour quitter) : ")
+		var input string
+		fmt.Scan(&input)
+
+		// Si l'utilisateur ne choisit pas '+', quitter le jeu
+		if input != "+" {
+			fmt.Println("Merci d'avoir joué ! À bientôt.")
+			break
+		}
+
+		clearScreen() // Effacer l'écran pour une nouvelle partie
+	}
+}
+
+// Fonction qui contient le jeu du pendu
+func playGame() {
 	// Demander à l'utilisateur de choisir une difficulté
 	var choix int
 	fmt.Println("Entrez une difficulté :")
@@ -68,6 +86,11 @@ func main() {
 
 	// Boucle principale pour deviner le mot
 	for vie > 0 {
+		clearScreen() // Ajouter l'appel ici pour effacer l'écran avant chaque affichage
+
+		// Afficher le dessin du pendu
+		fmt.Println(drawHangman(vie))
+
 		// Afficher le mot avec les lettres visibles
 		fmt.Printf("Le mot à deviner est : %s\n", affichage)
 		fmt.Printf("Il vous reste %d vies.\n", vie)
@@ -124,19 +147,92 @@ func main() {
 		}
 	}
 
-	// Forcer l'utilisateur à utiliser * pour quitter le programme
-	for {
-		fmt.Println("Entrez * pour quitter : ")
-		var quitInput string
-		fmt.Scan(&quitInput)
-		if quitInput == "*" {
-			break
-		} else {
-			fmt.Println("Entrée invalide. Utilisez * pour quitter.")
-		}
+	clearScreen() // Effacement de l'écran après la fin de la partie
+}
+
+// Fonction pour dessiner le pendu en fonction du nombre de vies restantes
+func drawHangman(vie int) string {
+	steps := []string{
+		`
+    
+      | 
+      | 
+      | 
+      | 
+      | 
+  ___/ `,
+		`
+  ___  
+      |     
+      | 
+      | 
+      | 
+      | 
+  ___/ `,
+		`
+  ___  
+  |   | 
+      | 
+      | 
+      | 
+      | 
+  ___/ `,
+		`
+  ___  
+  |   | 
+  o   | 
+      | 
+      | 
+      | 
+  ___/ `,
+		`
+  ___  
+  |   | 
+  o   | 
+  |   | 
+      | 
+      | 
+  ___/ `,
+		`
+  ___  
+  |   | 
+  o   | 
+ /|   | 
+      | 
+      | 
+  ___/ `,
+		`
+  ___  
+  |   | 
+  o   | 
+ /|\  | 
+      | 
+      | 
+  ___/ `,
+		`
+  ___  
+  |   | 
+  o   | 
+ /|\  | 
+ /    | 
+      | 
+  ___/ `,
+		`
+  ___  
+  |   | 
+  o   | 
+ /|\  | 
+ / \  | 
+      | 
+  ___/ `,
 	}
 
-	clearScreen() // Effacement de l'écran après que l'utilisateur a entré *
+	index := 9 - vie // Calculer l'étape du dessin à partir des vies restantes
+	if index >= len(steps) {
+		index = len(steps) - 1 // Assurer de ne pas dépasser les étapes
+	}
+
+	return steps[index]
 }
 
 // Fonction pour remplacer les lettres restantes par des underscores
@@ -177,17 +273,7 @@ func contains(indices []int, val int) bool {
 
 // Fonction pour effacer l'écran selon l'OS
 func clearScreen() {
-	var cmd *exec.Cmd
-	switch runtime.GOOS {
-	case "windows":
-		cmd = exec.Command("cmd", "/c", "cls")
-	case "linux", "darwin": // Linux et MacOS
-		cmd = exec.Command("clear")
-	default:
-		return
-	}
-	cmd.Stdout = os.Stdout
-	cmd.Run()
+	fmt.Print("\033[H\033[2J")
 }
 
 // Fonction pour vérifier si une rune est dans un mot
